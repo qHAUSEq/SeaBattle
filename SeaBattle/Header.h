@@ -5,10 +5,11 @@
 #include <string>
 #include <math.h>
 #include <sstream>
+#include <vector>
 
 using std::string;
 using std::floor;
-using std::shared_ptr;
+using std::vector;
 
 const int GUI_TEXT_MAX = 24;
 const int GUI_TEXT_BACKSPACE = 8;

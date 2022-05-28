@@ -40,8 +40,8 @@ bool Game(sf::RenderWindow& window)
 
 	Ship* shipPlayer1 = new Ship[n];
 	Ship* shipPlayer2 = new Ship[n];
-	for (int i = 0; i < 20; i++) shipPlayer2[i].AddSprite("Texture\\ship_left.png");
-	for (int i = 0; i < 20; i++) shipPlayer1[i].AddSprite("Texture\\ship.png");
+	for (int i = 0; i < n; i++) shipPlayer2[i].AddSprite("Texture\\ship_left.png");
+	for (int i = 0; i < n; i++) shipPlayer1[i].AddSprite("Texture\\ship.png");
 
 	// Создание фона
 

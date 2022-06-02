@@ -11,7 +11,7 @@ using std::string;
 using std::floor;
 using std::vector;
 
-namespace TXT
+namespace TXT // namespace for easier use of sf::Text
 {
 	class Text
 	{
@@ -77,22 +77,19 @@ const int GUI_TEXT_BACKSPACE = 8;
 const int GUI_TEXT_ESCAPE = 27;
 const sf::Color GUI_TEXT_GRAY = sf::Color(105, 105, 105);
 
-
 class Ship
 {
 public:
 
 	Ship()
 	{
-		texture.loadFromFile(this->fileName);
+		texture.loadFromFile(this->fileNameShip);
 		ship.setTexture(texture);
 		ship.setPosition(2000, 0);
 	}
 
-	static void setPATH()
-	{
-		fileName = "Texture\\ship_left.png";
-	}
+	static void setPATH() { fileNameShip = "Texture\\ship.png"; }
+	static void setPATH2() { fileNameShip = "Texture\\ship_left.png"; }
 
 	void Set_Pos(float x, float y)
 	{
@@ -104,8 +101,7 @@ public:
 	}
 	
 private:
-	static string fileName;
-	sf::Image image;
+	static string fileNameShip;
 	sf::Texture texture;
 	sf::Sprite ship;
 };
@@ -114,12 +110,16 @@ private:
 class Cross
 {
 public:
-	Cross() { cross_sp.setPosition(2000, 0); };
-	void AddSprite(string fileName)
+	Cross() 
 	{
-		cross_tex.loadFromFile(fileName);
+		cross_tex.loadFromFile(this->fileNameCross);
 		cross_sp.setTexture(cross_tex);
-	}
+		cross_sp.setPosition(2000, 0);
+	};
+
+	static void setPATH() { fileNameCross = "Texture\\GreenCross.png"; }
+	static void setPATH2() { fileNameCross = "Texture\\RedCross.png"; }
+
 	void Set_Pos(float x, float y)
 	{
 		cross_sp.setPosition(x, y);
@@ -130,9 +130,11 @@ public:
 	}
 
 private:
+	static string fileNameCross;
 	sf::Texture cross_tex;
 	sf::Sprite cross_sp;
 };
+
 
 class TextField {
 public:
@@ -165,7 +167,7 @@ private:
 bool Menu(sf::RenderWindow& window, TextField& tf, TextField& tf2);
 void Field(float x, float y, int& active_menu, sf::CircleShape square, bool activeField2, sf::RenderWindow& window);
 void CreateShips(bool player2, int& active_menu, vector<Ship>& shipPlayer, int& qtyShips, vector<int>& arr);
-void Attack(int* active_menu, vector<int>& arr, int& qtyCrossesGreen, int& qtyCrossesRed, Cross greenCross[], Cross redCross[], bool player2);
+void Attack(int& active_menu, vector<int>& arr, int& qtyCrossesGreen, int& qtyCrossesRed, vector<Cross>& greenCross, vector<Cross>& redCross, bool player2);
 void GameRunning(sf::RenderWindow& window);
 bool Game(sf::RenderWindow& window);
 bool WinnerMenu(sf::RenderWindow& window, int qtyCrossesGreen, int qtyCrossesRed, int qtyCrossesRed2, int qtyCrossesGreen2, string nick, sf::Font f, float time);

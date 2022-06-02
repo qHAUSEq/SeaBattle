@@ -3,7 +3,7 @@
 const int n = 20;
 const int n2 = 80;
 const int n3 = 100;
-string Ship::fileName = "Texture\\ship.png"; // Инициализация кораблей первого игрока
+int old_value = 0;
 
 void GameRunning(sf::RenderWindow& window)
 {
@@ -18,14 +18,13 @@ bool Game(sf::RenderWindow& window)
 	bool exit2 = true;
 
 	exit2 = Menu(window, tf, tf2);
-	if (exit2 == false) return false;
+	if (!exit2) return false;
 
 	//Основные переменные
 
-	int active_menu = 0, active_menu2 = 0, qtyShips = 0, qtyCrossesGreen = 0, qtyCrossesRed = 0, qtyCrossesGreen2 = 0, qtyCrossesRed2 = 0, count = 0;
+	int active_menu = 0, active_menu2 = 0, qtyShips = 0, count = 0, qtyCrossesGreen = 0, qtyCrossesRed = 0, qtyCrossesGreen2 = 0, qtyCrossesRed2 = 0;
 	float x = 50.0, y = 60.0, x2 = 800.0;
 	bool player2 = false, shipVisible = true, shipVisible2 = true, exit;
-	string nickname, nickname2;
 	std::ostringstream ss; ss << 0;
 	sf::Clock clock;
 
@@ -34,8 +33,10 @@ bool Game(sf::RenderWindow& window)
 
 	// Кораблики
 
-	vector<Ship> shipPlayer1(n);
 	Ship::setPATH();
+	vector<Ship> shipPlayer1(n);
+
+	Ship::setPATH2();
 	vector<Ship> shipPlayer2(n);
 
 	// Создание фона
@@ -46,38 +47,31 @@ bool Game(sf::RenderWindow& window)
 	spriteBackground.setPosition(0, 0);
 
 	// Массивы крестиков, попал или промах
-	
-	Cross* greenCross = new Cross[n];
-	Cross* redCross = new Cross[n2];
-	Cross* greenCross2 = new Cross[n];
-	Cross* redCross2 = new Cross[n2];
-	for (int i = 0; i < n; i++)
-	{
-		greenCross[i].AddSprite("Texture\\GreenCross.png");
-		greenCross2[i].AddSprite("Texture\\GreenCross.png");
-	}
-	for (int i = 0; i < n2; i++)
-	{
-		redCross[i].AddSprite("Texture\\RedCross.png");
-		redCross2[i].AddSprite("Texture\\RedCross.png");
-	}
+
+	Cross::setPATH();
+	vector<Cross> greenCross(n);
+	vector<Cross> greenCross2(n);
+
+	Cross::setPATH2();
+	vector<Cross> redCross(n2);
+	vector<Cross> redCross2(n2);
 
 	// Работа с текстом/добавление шрифта
 
-	nickname = tf.getText(); 
-	nickname2 = tf2.getText();
+	string nickname = tf.getText(); 
+	string nickname2 = tf2.getText();
 
 	sf::Font fontForText, fontForName;
 	fontForText.loadFromFile("Font\\MoonlessSC-Regular.otf");
 	fontForName.loadFromFile("Font\\Cavorting.otf");
 
-	TXT::Text nick("First player: " + nickname, fontForName, 25, sf::Color::Red, 100, 30), 
-			  nick2("Second player: " + nickname2, fontForName, 25, sf::Color::Red, 1200, 30),
-			  move("Qty moves: " + ss.str(), fontForText, 30, sf::Color::Magenta, 610, 1),
-			  whoIsMove("", fontForText, 30, sf::Color::Magenta, 500, 25), 
-			  num("0\n1\n2\n3\n4\n5\n6\n7\n8\n9", fontForText, 50, sf::Color::Black, 733, 100), 
-			  letter("A   B   C   D   E   F   G   H   I   J", fontForText, 55, sf::Color::Black, 25, 780), 
-			  letter2("J   I   H   G   F   E   D   C   B   A", fontForText, 55, sf::Color::Black, 780, 780);
+	TXT::Text nick		("First player: " + nickname, fontForName, 25, sf::Color::Red, 100, 30), 
+			  nick2		("Second player: " + nickname2, fontForName, 25, sf::Color::Red, 1200, 30),
+			  move		("Qty moves: " + ss.str(), fontForText, 30, sf::Color::Magenta, 610, 1),
+			  whoIsMove	("", fontForText, 30, sf::Color::Magenta, 500, 25), 
+			  num		("0\n1\n2\n3\n4\n5\n6\n7\n8\n9", fontForText, 50, sf::Color::Black, 733, 100), 
+			  letter	("A   B   C   D   E   F   G   H   I   J", fontForText, 55, sf::Color::Black, 25, 780), 
+			  letter2	("J   I   H   G   F   E   D   C   B   A", fontForText, 55, sf::Color::Black, 780, 780);
 
 	//Работа с полем квадратов
 
@@ -120,10 +114,10 @@ bool Game(sf::RenderWindow& window)
 			{
 				shipPlayer1.clear();
 				shipPlayer2.clear();
-				delete[] greenCross;     greenCross = nullptr;
-				delete[] redCross;       redCross = nullptr;
-				delete[] greenCross2;    greenCross2 = nullptr;
-				delete[] redCross2;      redCross2 = nullptr;
+				greenCross.clear();
+				greenCross2.clear();
+				redCross.clear();
+				redCross2.clear();
 				arr.clear();
 				arr2.clear();
 
@@ -135,93 +129,104 @@ bool Game(sf::RenderWindow& window)
 				{
 				case sf::Keyboard::Right:
 				{
-					if (player2 == false) active_menu++;
-					else active_menu2++;
+					if (player2 == false)	active_menu++;
+					else					active_menu2++;
 					break;
 				}
 				case sf::Keyboard::Left:
 				{
-					if (player2 == false) active_menu--;
-					else active_menu2--;
+					if (player2 == false)	active_menu--;
+					else					active_menu2--;
 					break;
 				}
 				case sf::Keyboard::Up:
 				{
-					if (player2 == false) active_menu -= 10;
-					else active_menu2 -= 10;
+					if (player2 == false)	active_menu -= 10;
+					else					active_menu2 -= 10;
 					break;
 				}
 				case sf::Keyboard::Down:
 				{
-					if (player2 == false) active_menu += 10;
-					else active_menu2 += 10;
+					if (player2 == false)	active_menu += 10;
+					else					active_menu2 += 10;
 					break;
 				}
 				case sf::Keyboard::Enter:
 				{
 					if (count < 1)
 					{
-						if (player2 == false) CreateShips(player2, active_menu, shipPlayer1, qtyShips, arr);
-						else CreateShips(player2, active_menu2, shipPlayer2, qtyShips, arr2);
+						if (player2 == false)	CreateShips(player2, active_menu, shipPlayer1, qtyShips, arr);
+						else					CreateShips(player2, active_menu2, shipPlayer2, qtyShips, arr2);
 						break;
 					}
 					if (count == 1)
 					{
+
 						if (player2 == true)
 						{
-							Attack(&active_menu2, arr2, qtyCrossesGreen, qtyCrossesRed, greenCross, redCross, player2);
-							player2 = false;
-							shipVisible = false;
-							shipVisible2 = true;
-							ss.str("");
-							ss << qtyCrossesGreen + qtyCrossesGreen2 + qtyCrossesRed + qtyCrossesRed2;
-							move.setString("Qty moves: " + ss.str());
-							break;
+							Attack(active_menu2, arr2, qtyCrossesGreen, qtyCrossesRed, greenCross, redCross, player2);
+							if (old_value == qtyCrossesGreen || qtyCrossesRed == old_value)
+							{
+								player2 = false;
+								shipVisible = false;
+								shipVisible2 = true;
+							}
 						}
 						else
 						{
-							Attack(&active_menu, arr, qtyCrossesGreen2, qtyCrossesRed2, greenCross2, redCross2, player2);
-							player2 = true;
-							shipVisible = true;
-							shipVisible2 = false;
-							ss.str("");
-							ss << qtyCrossesGreen + qtyCrossesGreen2 + qtyCrossesRed + qtyCrossesRed2;
-							move.setString("Qty moves: " + ss.str());
-							break;
+							Attack(active_menu, arr, qtyCrossesGreen2, qtyCrossesRed2, greenCross2, redCross2, player2);
+							if (old_value == qtyCrossesRed2 || qtyCrossesGreen2 == old_value)
+							{
+								player2			= true;
+								shipVisible		= true;
+								shipVisible2	= false;
+							}
 						}
+						ss.str("");
+						ss << qtyCrossesGreen + qtyCrossesGreen2 + qtyCrossesRed + qtyCrossesRed2;
+						move.setString("Qty moves: " + ss.str());
+						break;
+
 					}
 				}
+				case sf::Keyboard::Escape:
+				{
+					shipPlayer1.clear();
+					shipPlayer2.clear();
+					greenCross.clear();
+					greenCross2.clear();
+					redCross.clear();
+					redCross2.clear();
+					arr.clear();
+					arr2.clear();
+
+					return true;
+				}
 				}
 			}
 			}
-		}
-		x = 50, y = 60, x2 = 800;
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-		{
-			shipPlayer1.clear();
-			shipPlayer2.clear();
-			delete[] greenCross;     greenCross = nullptr;
-			delete[] redCross;       redCross = nullptr;
-			delete[] greenCross2;    greenCross2 = nullptr;
-			delete[] redCross2;      redCross2 = nullptr;
-			arr.clear();
-			arr2.clear();
-
-			return true;
 		}
 
 		window.draw(spriteBackground);
-		Field(x, y, active_menu, figure2, false, window);
-		Field(x2, y, active_menu2, figure, true, window);
+		Field(x, y, active_menu, figure, false, window);
+		Field(x2, y, active_menu2, figure2, true, window);
 
-		if (shipVisible) for (int i = 0; i < n; i++) shipPlayer1[i].Draw_Ship(window);
-		if (shipVisible2) for (int i = 0; i < n; i++) shipPlayer2[i].Draw_Ship(window);
+		if (shipVisible) for (int i = 0; i < n; i++)	shipPlayer1[i].Draw_Ship(window);
+		if (shipVisible2) for (int i = 0; i < n; i++)	shipPlayer2[i].Draw_Ship(window);
 
-		for (int i = 0; i < n; i++) greenCross[i].Draw_Cross(window);
-		for (int i = 0; i < n2; i++) redCross[i].Draw_Cross(window);
-		for (int i = 0; i < n; i++) greenCross2[i].Draw_Cross(window);
-		for (int i = 0; i < n2; i++) redCross2[i].Draw_Cross(window);
+		if (old_value != 0)
+		{
+			for (int i = 0; i < n; i++)
+			{
+				greenCross[i].Draw_Cross(window);
+				greenCross2[i].Draw_Cross(window);
+			}
+			for (int i = 0; i < n2; i++)
+			{
+				redCross[i].Draw_Cross(window);
+				redCross2[i].Draw_Cross(window);
+			}
+		}
 
 		nick.draw(window);
 		nick2.draw(window);
@@ -237,29 +242,15 @@ bool Game(sf::RenderWindow& window)
 
 		if (qtyCrossesGreen == 20)
 		{
-			exit = WinnerMenu(window, qtyCrossesGreen, qtyCrossesRed, qtyCrossesRed2, qtyCrossesGreen2, nickname, fontForText, time);
+			if (qtyCrossesGreen2 == 20) exit = WinnerMenu(window, qtyCrossesGreen, qtyCrossesRed, qtyCrossesRed2, qtyCrossesGreen2, nickname2, fontForText, time);
+										exit = WinnerMenu(window, qtyCrossesGreen, qtyCrossesRed, qtyCrossesRed2, qtyCrossesGreen2, nickname, fontForText, time);
 
 			shipPlayer1.clear();
 			shipPlayer2.clear();
-			delete[] greenCross;     greenCross = nullptr;
-			delete[] redCross;       redCross = nullptr;
-			delete[] greenCross2;    greenCross2 = nullptr;
-			delete[] redCross2;      redCross2 = nullptr;
-			arr.clear();
-			arr2.clear();
-
-			return exit;
-		}
-		if (qtyCrossesGreen2 == 20)
-		{
-			exit = WinnerMenu(window, qtyCrossesGreen, qtyCrossesRed, qtyCrossesRed2, qtyCrossesGreen2, nickname2, fontForText, time);
-
-			shipPlayer1.clear();
-			shipPlayer2.clear();
-			delete[] greenCross;     greenCross = nullptr;
-			delete[] redCross;       redCross = nullptr;
-			delete[] greenCross2;    greenCross2 = nullptr;
-			delete[] redCross2;      redCross2 = nullptr;
+			greenCross.clear();
+			greenCross2.clear();
+			redCross.clear();
+			redCross2.clear();
 			arr.clear();
 			arr2.clear();
 
@@ -396,7 +387,7 @@ void CreateShips(bool player2, int& active_menu, vector<Ship>& shipPlayer, int& 
 
 	shipPlayer[qtyShips].Set_Pos(posXship, posYship);
 
-	for (int i = 0; i < n3; i++)
+	for (int i = 0; i < arr.size(); i++)
 	{
 		if (i == active_menu && arr[i] != 1)
 		{
@@ -406,38 +397,38 @@ void CreateShips(bool player2, int& active_menu, vector<Ship>& shipPlayer, int& 
 	}
 }
 
-void Attack(int* active_menu, vector<int>& arr, int& qtyCrossesGreen, int& qtyCrossesRed, Cross greenCross[], Cross redCross[], bool player2)
+void Attack(int& active_menu, vector<int>& arr, int& qtyCrossesGreen, int& qtyCrossesRed, vector<Cross>& greenCross, vector<Cross>& redCross, bool player2)
 {
 	float posXcross, posYcross;
-	for (int i = 0; i < n3; i++)
+
+	for (int i = 0; i < arr.size(); i++)
 	{
-		if (i == *active_menu)
+
+		if (i == active_menu)
 		{
+
+			if (player2 == true)	posXcross = (float)780 + (float)70 * (active_menu % 10);
+			else					posXcross = (float)25 + (float)70 * (active_menu % 10);
+
+			posYcross = 105 + 68 * floor(active_menu / static_cast<float>(10));
+
+			if (arr[i] == 2 || arr[i] == 3) old_value += 20;
+
 			if (arr[i] == 1)
 			{
-				if (player2 == true)	posXcross = (float)780 + (float)70 * (*active_menu % 10);
-				else					posXcross = (float)25 + (float)70 * (*active_menu % 10);
-
-				posYcross = 105 + 68 * floor(*active_menu / static_cast<float>(10));
-
 				greenCross[qtyCrossesGreen].Set_Pos(posXcross, posYcross);
 
 				arr[i] = 2; // попал
-				(qtyCrossesGreen)++;
-				break;
+				qtyCrossesGreen++;
+				old_value = qtyCrossesGreen;
 			}
 			if (arr[i] == 0)
 			{
-				if (player2 == true)	posXcross = (float)780 + (float)70 * (*active_menu % 10);
-				else					posXcross = (float)25 + (float)70 * (*active_menu % 10);
-
-				posYcross = 105 + 68 * floor(*active_menu / static_cast<float>(10));
-
 				redCross[qtyCrossesRed].Set_Pos(posXcross, posYcross);
 
 				arr[i] = 3; // не попал
-				(qtyCrossesRed)++;
-				break;
+				qtyCrossesRed++;
+				old_value = qtyCrossesRed;
 			}
 		}
 	}
@@ -463,11 +454,11 @@ bool WinnerMenu(sf::RenderWindow& window, int qtyCrossesGreen, int qtyCrossesRed
 
 	ss << qtyMoves; ssMiss << qtyCrossesRed + qtyCrossesRed2; ssHits << qtyCrossesGreen + qtyCrossesGreen2;
 
-	TXT::Text message("CONGRATULATIONS! " + nick + " winner!", f, 80, sf::Color::Red, 400, 350),
-			  elapsedTime("The game lasted: " + ssMin.str() + " min " + ssSec.str() + " sec ", f, 40, sf::Color::Black, 400, 450),
-			  moves("Number of moves: " + ss.str(), f, 40, sf::Color::Black, 400, 500),
-			  miss("Number of misses: " + ssMiss.str(), f, 40, sf::Color::Black, 900, 450),
-			  hits("Number of hits: " + ssHits.str(), f, 40, sf::Color::Black, 900, 500);
+	TXT::Text message		("CONGRATULATIONS! " + nick + " winner!", f, 80, sf::Color::Red, 400, 350),
+			  elapsedTime	("The game lasted: " + ssMin.str() + " min " + ssSec.str() + " sec ", f, 40, sf::Color::Black, 400, 450),
+			  moves			("Number of moves: " + ss.str(), f, 40, sf::Color::Black, 400, 500),
+			  miss			("Number of misses: " + ssMiss.str(), f, 40, sf::Color::Black, 900, 450),
+			  hits			("Number of hits: " + ssHits.str(), f, 40, sf::Color::Black, 900, 500);
 
 	bool isMenu = true;
 	int active_menu = 0;

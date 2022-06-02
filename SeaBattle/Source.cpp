@@ -1,5 +1,8 @@
 #include "Header.h"
 
+string Ship::fileNameShip = " ";
+string Cross::fileNameCross = " ";
+
 int main()
 {
 	sf::RenderWindow window;

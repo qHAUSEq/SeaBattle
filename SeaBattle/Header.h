@@ -81,20 +81,17 @@ const sf::Color GUI_TEXT_GRAY = sf::Color(105, 105, 105);
 class Ship
 {
 public:
-	Ship() 
-	{ 
-		fileName = "";
-		texture.loadFromFile(fileName);
-		ship.setTexture(texture);
-	}
-	Ship(string fileName)
-	{
-		this->fileName = fileName;
 
-		image.loadFromFile(fileName);
-		texture.loadFromImage(image);
+	Ship()
+	{
+		texture.loadFromFile(this->fileName);
 		ship.setTexture(texture);
 		ship.setPosition(2000, 0);
+	}
+
+	static void setPATH()
+	{
+		fileName = "Texture\\ship_left.png";
 	}
 
 	void Set_Pos(float x, float y)
@@ -105,9 +102,9 @@ public:
 	{
 		window.draw(ship);
 	}
-
+	
 private:
-	string fileName;
+	static string fileName;
 	sf::Image image;
 	sf::Texture texture;
 	sf::Sprite ship;

@@ -3,6 +3,7 @@
 const int n = 20;
 const int n2 = 80;
 const int n3 = 100;
+string Ship::fileName = "Texture\\ship.png"; // Инициализация кораблей первого игрока
 
 void GameRunning(sf::RenderWindow& window)
 {
@@ -33,8 +34,9 @@ bool Game(sf::RenderWindow& window)
 
 	// Кораблики
 
-	vector<Ship> shipPlayer1(n, Ship("Texture\\ship.png"));
-	vector<Ship> shipPlayer2(n, Ship("Texture\\ship_left.png"));
+	vector<Ship> shipPlayer1(n);
+	Ship::setPATH();
+	vector<Ship> shipPlayer2(n);
 
 	// Создание фона
 

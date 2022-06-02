@@ -18,7 +18,7 @@ int main()
 
 	GameRunning(window);
 
-	window.close();
 	music.stop();
+	window.close();
 	return 0;
 }

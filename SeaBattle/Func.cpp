@@ -33,10 +33,8 @@ bool Game(sf::RenderWindow& window)
 
 	// Кораблики
 
-	Ship* shipPlayer1 = new Ship[n];
-	Ship* shipPlayer2 = new Ship[n];
-	for (int i = 0; i < n; i++) shipPlayer2[i].AddSprite("Texture\\ship_left.png");
-	for (int i = 0; i < n; i++) shipPlayer1[i].AddSprite("Texture\\ship.png");
+	vector<Ship> shipPlayer1(n, Ship("Texture\\ship.png"));
+	vector<Ship> shipPlayer2(n, Ship("Texture\\ship_left.png"));
 
 	// Создание фона
 
@@ -118,8 +116,8 @@ bool Game(sf::RenderWindow& window)
 			{
 			case sf::Event::Closed:
 			{
-				delete[] shipPlayer1;    shipPlayer1 = nullptr;
-				delete[] shipPlayer2;    shipPlayer2 = nullptr;
+				shipPlayer1.clear();
+				shipPlayer2.clear();
 				delete[] greenCross;     greenCross = nullptr;
 				delete[] redCross;       redCross = nullptr;
 				delete[] greenCross2;    greenCross2 = nullptr;
@@ -199,8 +197,8 @@ bool Game(sf::RenderWindow& window)
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 		{
-			delete[] shipPlayer1;    shipPlayer1 = nullptr;
-			delete[] shipPlayer2;    shipPlayer2 = nullptr;
+			shipPlayer1.clear();
+			shipPlayer2.clear();
 			delete[] greenCross;     greenCross = nullptr;
 			delete[] redCross;       redCross = nullptr;
 			delete[] greenCross2;    greenCross2 = nullptr;
@@ -239,8 +237,8 @@ bool Game(sf::RenderWindow& window)
 		{
 			exit = WinnerMenu(window, qtyCrossesGreen, qtyCrossesRed, qtyCrossesRed2, qtyCrossesGreen2, nickname, fontForText, time);
 
-			delete[] shipPlayer1;    shipPlayer1 = nullptr;
-			delete[] shipPlayer2;    shipPlayer2 = nullptr;
+			shipPlayer1.clear();
+			shipPlayer2.clear();
 			delete[] greenCross;     greenCross = nullptr;
 			delete[] redCross;       redCross = nullptr;
 			delete[] greenCross2;    greenCross2 = nullptr;
@@ -254,8 +252,8 @@ bool Game(sf::RenderWindow& window)
 		{
 			exit = WinnerMenu(window, qtyCrossesGreen, qtyCrossesRed, qtyCrossesRed2, qtyCrossesGreen2, nickname2, fontForText, time);
 
-			delete[] shipPlayer1;    shipPlayer1 = nullptr;
-			delete[] shipPlayer2;    shipPlayer2 = nullptr;
+			shipPlayer1.clear();
+			shipPlayer2.clear();
 			delete[] greenCross;     greenCross = nullptr;
 			delete[] redCross;       redCross = nullptr;
 			delete[] greenCross2;    greenCross2 = nullptr;
@@ -385,7 +383,7 @@ void Field(float x, float y, int& active_menu, sf::CircleShape square, bool acti
 	}
 }
 
-void CreateShips(bool player2, int& active_menu, Ship shipPlayer[], int& qtyShips, vector<int>& arr)
+void CreateShips(bool player2, int& active_menu, vector<Ship>& shipPlayer, int& qtyShips, vector<int>& arr)
 {
 	float posXship, posYship;
 

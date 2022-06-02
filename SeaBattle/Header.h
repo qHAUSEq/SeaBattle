@@ -77,16 +77,26 @@ const int GUI_TEXT_BACKSPACE = 8;
 const int GUI_TEXT_ESCAPE = 27;
 const sf::Color GUI_TEXT_GRAY = sf::Color(105, 105, 105);
 
+
 class Ship
 {
 public:
-	Ship() { ship.setPosition(2000, 0); };
-
-	void AddSprite(string fileName)
-	{
+	Ship() 
+	{ 
+		fileName = "";
 		texture.loadFromFile(fileName);
 		ship.setTexture(texture);
 	}
+	Ship(string fileName)
+	{
+		this->fileName = fileName;
+
+		image.loadFromFile(fileName);
+		texture.loadFromImage(image);
+		ship.setTexture(texture);
+		ship.setPosition(2000, 0);
+	}
+
 	void Set_Pos(float x, float y)
 	{
 		ship.setPosition(x, y);
@@ -97,9 +107,12 @@ public:
 	}
 
 private:
+	string fileName;
+	sf::Image image;
 	sf::Texture texture;
 	sf::Sprite ship;
 };
+
 
 class Cross
 {
@@ -154,7 +167,7 @@ private:
 
 bool Menu(sf::RenderWindow& window, TextField& tf, TextField& tf2);
 void Field(float x, float y, int& active_menu, sf::CircleShape square, bool activeField2, sf::RenderWindow& window);
-void CreateShips(bool player2, int& active_menu, Ship shipPlayer[], int& qtyShips, vector<int>& arr);
+void CreateShips(bool player2, int& active_menu, vector<Ship>& shipPlayer, int& qtyShips, vector<int>& arr);
 void Attack(int* active_menu, vector<int>& arr, int& qtyCrossesGreen, int& qtyCrossesRed, Cross greenCross[], Cross redCross[], bool player2);
 void GameRunning(sf::RenderWindow& window);
 bool Game(sf::RenderWindow& window);
